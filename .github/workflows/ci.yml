@@ -39,7 +39,7 @@ jobs:
       - name: 安装 typst (Linux)
         if: runner.os == 'Linux'
         run: |
-          curl -sL https://github.com/typst/typst/releases/download/v0.13.1/typst-x86_64-unknown-linux-musl.tar.gz | tar xz
+          curl -sL https://github.com/typst/typst/releases/download/v0.13.1/typst-x86_64-unknown-linux-musl.tar.xz | tar xJ
           sudo mv typst-x86_64-unknown-linux-musl/typst /usr/local/bin/typst
 
       - name: 安装 typst (Windows)
@@ -51,8 +51,13 @@ jobs:
           Expand-Archive typst.zip -DestinationPath .
           "$env:GITHUB_WORKSPACE\typst-x86_64-pc-windows-msvc" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
 
-      - name: 安装 Playwright 浏览器
+      - name: 安装 Playwright 浏览器 (Linux)
+        if: runner.os == 'Linux'
         run: uv run playwright install chromium --with-deps
+
+      - name: 安装 Playwright 浏览器 (Windows)
+        if: runner.os == 'Windows'
+        run: uv run playwright install chromium
 
       - name: Lint (ruff)
         run: |
