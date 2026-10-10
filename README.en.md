@@ -50,6 +50,10 @@ All of Pandoc's expressive power is retained: LaTeX → native OMML equations, m
 
 ## Authoring Guide (what to write in Markdown)
 
+**When an AI drafts the document, have it write through the [md2docx skill](skill/md2docx/SKILL.md) instead of freelancing and converting afterwards.** The skill bundles the full authoring conventions — front matter, diagram/equation fences, captions, citation markers, TOC and page-break rules — so the markdown it produces fits the converter exactly and converts with zero degradations. One click on "AI 支持" in the GUI installs it; then just say "write an ×× report using the md2docx skill".
+
+Quick reference for hand-written markdown:
+
 | Need | Use | Avoid |
 |---|---|---|
 | Flow/sequence/architecture diagrams | ```mermaid fences (Chinese labels OK) | ASCII art |
@@ -88,7 +92,7 @@ stdout carries a single JSON result; logs go to stderr; exit codes 0 success / 1
 
 ### One-click AI enablement
 
-The GUI's "AI 支持" button registers PATH, installs the bundled agent skill, and self-tests. Afterwards, telling Claude Code / Cursor / Zcode to "convert this md to Word" just works. (Onedir build only; the single-file build shows guidance to switch instead.)
+The GUI's "AI 支持" button registers PATH, installs the bundled agent skill, and self-tests. The skill covers two things: **operations** (CLI invocation, JSON result handling, remediation on failure) and **authoring conventions** (front matter, diagram/equation fences, captions, citation markers, TOC and page-break rules). Afterwards, telling Claude Code / Cursor / Zcode to "convert this md to Word" just works — and the recommended flow is to have the AI **draft the document to the skill's spec**, so the markdown fits the converter from the start. (Onedir build only; the single-file build shows guidance to switch instead.)
 
 ## FAQ
 
