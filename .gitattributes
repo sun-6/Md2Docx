@@ -1,0 +1,17 @@
+# 统一行尾：仓库与检出一律 LF（Windows 工具链均兼容 LF），
+# 避免 CI 检出的 CRLF 副本与本地行为不一致（引用转换对行尾敏感）
+* text=auto eol=lf
+
+# Windows 专属脚本保持 CRLF
+*.bat text eol=crlf
+*.cmd text eol=crlf
+*.ps1 text eol=crlf
+
+# 二进制（防误判）
+*.png binary
+*.jpg binary
+*.ico binary
+*.docx binary
+*.zip binary
+*.exe binary
+*.pdf binary
