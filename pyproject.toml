@@ -1,0 +1,41 @@
+[project]
+name = "md2docx"
+# 版本须与 md2docx_core.__version__ 一致（tests/test_static.py 强校验）
+version = "0.7.0"
+description = "Markdown to DOCX/HTML converter with PySide6"
+readme = "README.md"
+license = "GPL-3.0-or-later"
+license-files = ["LICENSE"]
+requires-python = ">=3.12"
+
+[project.urls]
+Repository = "https://github.com/sun-6/Md2Docx"
+Issues = "https://github.com/sun-6/Md2Docx/issues"
+Changelog = "https://github.com/sun-6/Md2Docx/blob/main/CHANGELOG.md"
+dependencies = [
+    "playwright>=1.56.0",
+    "pyside6>=6.10.1",
+    "pyside6-fluent-widgets[full]>=1.10.5",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.0",
+    "pyinstaller>=6.17.0",
+    "pyinstaller-hooks-contrib>=2025.10",
+    "pyright>=1.1.407",
+    "ruff>=0.14.7",
+    "pytest-cov>=7.1.0",
+]
+
+[tool.ruff]
+line-length = 120
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "B"]
+# E501: 提示文本含中文长句，长度不设卡
+ignore = ["E501"]
+
+[tool.pytest.ini_options]
+markers = ["fuzz: 生成的组合/边界语料回归（tests/fuzz_corpus.py）"]

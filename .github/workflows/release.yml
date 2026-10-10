@@ -1,0 +1,59 @@
+name: Release
+
+# 推送 v* 标签时自动构建发布包并创建 GitHub Release
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 安装 uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+
+      - name: 安装依赖
+        run: uv sync --dev
+
+      - name: 下载 pandoc
+        shell: pwsh
+        run: |
+          $url = "https://github.com/jgm/pandoc/releases/download/3.8.2.1/pandoc-3.8.2.1-windows-x86_64.zip"
+          Invoke-WebRequest -Uri $url -OutFile pandoc.zip
+          Expand-Archive pandoc.zip -DestinationPath .
+          Move-Item pandoc-3.8.2.1\pandoc.exe .
+
+      - name: 下载 typst
+        shell: pwsh
+        run: |
+          $url = "https://github.com/typst/typst/releases/download/v0.13.1/typst-x86_64-pc-windows-msvc.zip"
+          Invoke-WebRequest -Uri $url -OutFile typst.zip
+          Expand-Archive typst.zip -DestinationPath .
+          $exe = Get-ChildItem -Recurse -Filter typst.exe | Select-Object -First 1
+          Move-Item $exe.FullName .
+
+      - name: 安装 Playwright 浏览器
+        run: uv run playwright install chromium
+
+      - name: 测试
+        run: uv run pytest tests/ -q
+
+      - name: 构建（onedir + onefile）
+        run: uv run python build_package.py
+
+      - name: 上传 Release
+        uses: softprops/action-gh-release@v2
+        with:
+          body_path: RELEASE_BODY.md
+          files: |
+            Md2Docx_Release_Dir_*.zip
+            Md2Docx_Release_File_*.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

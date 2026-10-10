@@ -1,0 +1,16 @@
+#!/bin/sh
+# 本地提交门禁：与 CI 的静态两道关一致（ruff 格式/检查 + pyright core+cli）。
+# 测试不在此拦截——全量套件需要 pandoc/浏览器，塞进 pre-commit 只会训练
+# 所有人 --no-verify；测试拦截交给 CI（push/PR 触发，双平台）。
+#
+# 启用（每个克隆一次）：git config core.hooksPath .githooks
+# 临时绕过：git commit --no-verify
+set -e
+
+echo "[pre-commit] ruff format --check ..."
+uv run ruff format --check .
+echo "[pre-commit] ruff check ..."
+uv run ruff check .
+echo "[pre-commit] pyright (core + cli) ..."
+uv run pyright md2docx_core.py md2docx_cli.py
+echo "[pre-commit] 静态门禁通过"

@@ -1,0 +1,66 @@
+name: CI
+
+on:
+  push:
+    branches: [master, main]
+  pull_request:
+
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 安装 uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+
+      - name: 安装 Python 依赖
+        run: uv sync --dev
+
+      - name: 安装 pandoc (Linux)
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y pandoc
+
+      - name: 安装 pandoc (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $url = "https://github.com/jgm/pandoc/releases/download/3.8.2.1/pandoc-3.8.2.1-windows-x86_64.zip"
+          Invoke-WebRequest -Uri $url -OutFile pandoc.zip
+          Expand-Archive pandoc.zip -DestinationPath .
+          "$env:GITHUB_WORKSPACE\pandoc-3.8.2.1" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+
+      - name: 安装 typst (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          curl -sL https://github.com/typst/typst/releases/download/v0.13.1/typst-x86_64-unknown-linux-musl.tar.gz | tar xz
+          sudo mv typst-x86_64-unknown-linux-musl/typst /usr/local/bin/typst
+
+      - name: 安装 typst (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $url = "https://github.com/typst/typst/releases/download/v0.13.1/typst-x86_64-pc-windows-msvc.zip"
+          Invoke-WebRequest -Uri $url -OutFile typst.zip
+          Expand-Archive typst.zip -DestinationPath .
+          "$env:GITHUB_WORKSPACE\typst-x86_64-pc-windows-msvc" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+
+      - name: 安装 Playwright 浏览器
+        run: uv run playwright install chromium --with-deps
+
+      - name: Lint (ruff)
+        run: |
+          uv run ruff format --check .
+          uv run ruff check .
+
+      - name: Type check (pyright)
+        run: uv run pyright md2docx_core.py md2docx_cli.py
+
+      - name: 运行测试（含覆盖率）
+        run: uv run pytest tests/ -v --cov=md2docx_core --cov=md2docx_cli --cov-report=term
