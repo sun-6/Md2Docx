@@ -45,6 +45,7 @@ uv run python md2docx_cli.py convert tests/fixtures/citations_test.md --json  # 
 - 退出码契约：0 成功 / 1 转换失败（含 verify 报 error）/ 2 用法错误；打包脚本任一版本失败也退出 1
 - `table_filter.lua` 与 `md2docx_core.py` 的表格/公式/引用处理是配套的，改动任何一方都要跑上表全部验证
 - **跨语言镜像约定**（Lua/Python 各一份，改动必须双侧同步）：引用假值清单、引用 token 语法（`_CITATION_TOKEN_RE` ↔ `parse_citation_numbers`）、参考文献标题识别（`_REFERENCE_HEADING_RE` ↔ `normalize_heading_text`）、stderr 诊断前缀 `MD2DOCX-REF-INFO/WARN:`
+- **Lua 区域设置纪律**：凡接触非 ASCII 文本的字符串一律用 `ascii_lower`（仅缩 A-Z 字节），禁止 `:lower()/:upper()/%a/%u/%l`——`tolower` 随进程区域设置改写 CJK 字节（西文 Windows CP1252 下 献→纲，标题匹配静默失败，回归见 test 5 项 citations）
 - `convert_md_to_format` 返回 `ConversionResult`（非 bool），GUI 线程信号直传该对象，GUI 与 CLI 都不加兼容包装
 - 打包必须包含 `table_filter.lua`（pandoc 通过 `--lua-filter` 注入；两份 spec 的公共收集逻辑在 `build_common.py`，改随包资源只动它）
 
