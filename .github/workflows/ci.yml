@@ -103,6 +103,24 @@ jobs:
           pandoc tests/fixtures/citations_test.md -L table_filter.lua --to html5 -M md2docx-citations=true -o diag_raw.html 2> diag_stderr.txt
           echo "--- pandoc stderr（含 MD2DOCX-REF 诊断）:"
           cat diag_stderr.txt
+          echo "--- 内联探针（FORMAT / meta 开关 / 标题字节）:"
+          md5sum "$(which pandoc)" || true
+          cat > probe.lua <<'LUA'
+          function Meta(m)
+            local f = m["md2docx-citations"]
+            io.stderr:write("PROBE format=[", tostring(FORMAT), "]\n")
+            io.stderr:write("PROBE flag type=", type(f), " val=[", tostring(f), "]\n")
+          end
+          function Pandoc(doc)
+            for _, b in ipairs(doc.blocks) do
+              if b.t == "Header" then
+                local s = pandoc.utils.stringify(b)
+                io.stderr:write("PROBE header lvl=", tostring(b.level), " len=", tostring(#s), " text=[", s, "]\n")
+              end
+            end
+          end
+          LUA
+          pandoc tests/fixtures/citations_test.md -L probe.lua --to html5 -M md2docx-citations=true -o /dev/null 2>&1 | cat
           echo "--- 区域设置:"
           locale 2>/dev/null | head -3 || true
           cmd //c chcp 2>/dev/null || true
