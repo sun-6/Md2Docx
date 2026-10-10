@@ -94,6 +94,12 @@ jobs:
           set -x
           which pandoc
           pandoc --version | head -1
+          echo "--- 输入指纹（与本地比对）:"
+          git config core.autocrlf || true
+          git hash-object tests/fixtures/citations_test.md table_filter.lua
+          md5sum tests/fixtures/citations_test.md table_filter.lua
+          head -c 120 tests/fixtures/citations_test.md | od -c | head -6
+          head -c 60 table_filter.lua | od -c | head -3
           pandoc tests/fixtures/citations_test.md -L table_filter.lua --to html5 -M md2docx-citations=true -o diag_raw.html 2> diag_stderr.txt
           echo "--- pandoc stderr（含 MD2DOCX-REF 诊断）:"
           cat diag_stderr.txt
