@@ -10,13 +10,13 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest]
+        os: [ubuntu-24.04, windows-latest]  # 钉 24.04：ubuntu-latest 2026-10-19 迁移 Ubuntu 26
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6  # Node 24
 
       - name: 安装 uv
-        uses: astral-sh/setup-uv@v5
+        uses: astral-sh/setup-uv@v8.1.0  # Node 24（官方文档推荐版本）
         with:
           enable-cache: true
 
@@ -85,12 +85,37 @@ jobs:
         run: |
           uv run pyright --pythonpath "$(uv run python -c 'import sys; print(sys.executable)')" md2docx_core.py md2docx_cli.py
 
+      - name: 诊断 citations（原生 pandoc 二分）
+        # 本地通过而 CI 失败时的定位手段：绕过 Python 直接用 pandoc 跑同一转换。
+        # 步骤失败时日志自动展开；转换正常（含交叉引用）则本步骤通过。
+        if: always()
+        shell: bash
+        run: |
+          set -x
+          which pandoc
+          pandoc --version | head -1
+          pandoc tests/fixtures/citations_test.md -L table_filter.lua --to html5 -M md2docx-citations=true -o diag_raw.html
+          n=$(grep -c md2docx-ref diag_raw.html || true)
+          echo "raw pandoc md2docx-ref count: $n"
+          uv run python - <<'PY'
+          import md2docx_core as core
+          logs = []
+          r = core.convert_md_to_format("tests/fixtures/citations_test.md", "html", auto_open=False,
+                                        output_file="diag_core.html", log_callback=logs.append)
+          print("core ok:", r.ok, "| warnings:", r.warnings)
+          for l in logs:
+              print("LOG:", l)
+          html = open("diag_core.html", encoding="utf-8").read()
+          print("core md2docx-ref count:", html.count("md2docx-ref"))
+          PY
+          test "$n" -gt 0
+
       - name: 运行测试（含覆盖率）
         run: uv run pytest tests/ -v --cov=md2docx_core --cov=md2docx_cli --cov-report=term
 
       - name: 上传失败测试调试产物
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6  # Node 24
         with:
           name: test-debug-${{ matrix.os }}
           path: |
