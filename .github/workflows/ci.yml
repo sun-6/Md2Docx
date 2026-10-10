@@ -67,8 +67,14 @@ jobs:
           uv run ruff format --check .
           uv run ruff check .
 
+      - name: 验证关键依赖导入
+        run: |
+          uv run python -c "import playwright.sync_api as m; print('playwright at', m.__file__)"
+          uv run python -c "import sys; print('interpreter:', sys.executable)"
+
       - name: Type check (pyright)
-        run: uv run pyright md2docx_core.py md2docx_cli.py
+        run: |
+          uv run pyright --pythonpath "$(uv run python -c 'import sys; print(sys.executable)')" md2docx_core.py md2docx_cli.py
 
       - name: 运行测试（含覆盖率）
         run: uv run pytest tests/ -v --cov=md2docx_core --cov=md2docx_cli --cov-report=term
