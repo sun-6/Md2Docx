@@ -39,3 +39,8 @@ ignore = ["E501"]
 
 [tool.pytest.ini_options]
 markers = ["fuzz: 生成的组合/边界语料回归（tests/fuzz_corpus.py）"]
+
+[tool.pyright]
+# uv 的虚拟环境在 .venv，CI 上 pyright 默认不会自动发现它（playwright 等导入报 reportMissingImports）——显式指定解析环境
+venvPath = "."
+venv = ".venv"
