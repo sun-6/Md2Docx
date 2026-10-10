@@ -53,11 +53,11 @@ jobs:
 
       - name: 安装 Playwright 浏览器 (Linux)
         if: runner.os == 'Linux'
-        run: uv run playwright install chromium --with-deps
+        run: uv run python -m playwright install --with-deps chromium
 
       - name: 安装 Playwright 浏览器 (Windows)
         if: runner.os == 'Windows'
-        run: uv run playwright install chromium
+        run: uv run python -m playwright install chromium
 
       - name: Lint (ruff)
         run: |
