@@ -66,7 +66,7 @@ Equation tags `\tag{X}` are auto-rewritten to visible text; citation linking can
 
 ## Get It
 
-- **Packaged build (recommended)**: grab it from [GitHub Releases](../../releases) — `Md2Docx_Release_File_*.zip` (onedir: GUI + CLI) or `Md2Docx_Pro_OneFile.exe` (single file, GUI only — the CLI and AI support ship with the onedir build). Unzip and run; no dependencies to install — pandoc, the browser engine, and chart engines are all bundled offline.
+- **Packaged build (recommended)**: grab it from [GitHub Releases](../../releases) — `Md2Docx_Release_Dir_*.zip` (onedir: `Md2Docx_Pro.exe` + `md2docx-cli.exe` + the agent skill pack). Unzip and run; no dependencies to install — pandoc, the browser engine, and chart engines are all bundled offline.
 - **From source**: see [Development](#development) below.
 
 ## Usage

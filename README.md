@@ -66,7 +66,7 @@ Pandoc 是本项目的转换内核，但"直接调 Pandoc"得到的 Word 与排�
 
 ## 获取
 
-- **打包版（推荐）**：从 [GitHub Releases](../../releases) 下载——`Md2Docx_Release_File_*.zip`（单目录版，GUI + CLI 双 exe）或 `Md2Docx_Pro_OneFile.exe`（单文件版，仅 GUI——命令行与 AI 支持仅随单目录版提供）。解压即用，无需安装任何依赖，pandoc / 浏览器内核 / 图表引擎全部离线内置
+- **打包版（推荐）**：从 [GitHub Releases](../../releases) 下载 `Md2Docx_Release_Dir_*.zip`（单目录版：`Md2Docx_Pro.exe` + `md2docx-cli.exe` 双程序 + Agent 技能包）。解压即用，无需安装任何依赖，pandoc / 浏览器内核 / 图表引擎全部离线内置
 - **从源码运行**：见下文[开发](#开发)
 
 ## 使用方式
@@ -92,7 +92,7 @@ md2docx-cli check --json                               # 环境自检
 
 ### 给 AI 启用（一键）
 
-GUI 点击 **"AI 支持"** 按钮：注册 PATH → 安装 Agent 技能包 → 环境自检。技能包含两部分：**操作规范**（调 CLI、解读 JSON 结果、按 remediation 修复）与**撰写规范**（front matter、图表/公式围栏、题注、角标引用、目录与分页约定）。之后对 Claude Code / Cursor / Zcode 等 Agent 说"把这份 md 转成 Word"即可；**更推荐的用法是让 AI 按该技能从零撰写文档**——产出的 md 天然契合转换格式，一次转换零降级。（仅单目录版可用；单文件版打开该对话框会提示改用单目录版）
+GUI 点击 **"AI 支持"** 按钮：注册 PATH → 安装 Agent 技能包 → 环境自检。技能包含两部分：**操作规范**（调 CLI、解读 JSON 结果、按 remediation 修复）与**撰写规范**（front matter、图表/公式围栏、题注、角标引用、目录与分页约定）。之后对 Claude Code / Cursor / Zcode 等 Agent 说"把这份 md 转成 Word"即可；**更推荐的用法是让 AI 按该技能从零撰写文档**——产出的 md 天然契合转换格式，一次转换零降级。
 
 ## 常见问题
 
