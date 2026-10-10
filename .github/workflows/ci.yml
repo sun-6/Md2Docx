@@ -54,10 +54,13 @@ jobs:
       - name: 安装 Playwright 浏览器 (Linux)
         if: runner.os == 'Linux'
         run: uv run python -m playwright install --with-deps chromium
+        # 浏览器安装失败时渲染类测试经 requires_browser 自动 skip，不阻塞主线
+        continue-on-error: true
 
       - name: 安装 Playwright 浏览器 (Windows)
         if: runner.os == 'Windows'
         run: uv run python -m playwright install chromium
+        continue-on-error: true
 
       - name: Lint (ruff)
         run: |

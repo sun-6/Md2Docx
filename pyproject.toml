@@ -1,7 +1,7 @@
 [project]
 name = "md2docx"
 # 版本须与 md2docx_core.__version__ 一致（tests/test_static.py 强校验）
-version = "0.7.0"
+version = "0.8.0"
 description = "Markdown to DOCX/HTML converter with PySide6"
 readme = "README.md"
 license = "GPL-3.0-or-later"
