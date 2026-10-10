@@ -1,6 +1,6 @@
 -- Md2Docx — pandoc Lua 过滤器
 -- Copyright (C) 2025-2026 sun_yy
--- SPDX-License-Identifier: GPL-3.0-or-later
+-- SPD-License-Identifier: GPL-3.0-or-later
 
 -- ============================================================
 -- 0. 诊断输出与跨语言契约
@@ -10,11 +10,11 @@
 -- ============================================================
 
 local function ref_diag_info(msg)
-  io.stderr:write("MD2DOCX-REF-INFO: " .. msg .. "\n")
+  io.stderr:write("MD2DOC-REF-INFO: " .. msg .. "\n")
 end
 
 local function ref_diag_warn(msg)
-  io.stderr:write("MD2DOCX-REF-WARN: " .. msg .. "\n")
+  io.stderr:write("MD2DOC-REF-WARN: " .. msg .. "\n")
 end
 
 -- 以下两条与 core 侧互为镜像（Lua/Python 各一份，改动须双侧同步）：
@@ -120,12 +120,12 @@ end
 --    缺省开启）；typst 等书签语义未验证的 writer 不启用。
 -- ============================================================
 
-local REF_HEADING_TEXTS = {
+local REF_HEADING_TETS = {
   ["参考文献"] = true,
   ["references"] = true,
   ["bibliography"] = true,
 }
-local REF_ANCHOR_PREFIX = "ref-"
+local REF_ANCHOR_PREFI = "ref-"
 
 -- 参考文献标题的前导编号：阿拉伯数字或中文数字，可跟至多一个分隔符
 local REF_HEADING_SEPARATORS = { ".", "、", ")", "．" }
@@ -200,7 +200,7 @@ local function is_reference_header(header)
   if header.t ~= "Header" then
     return false
   end
-  return REF_HEADING_TEXTS[normalize_heading_text(pandoc.utils.stringify(header))] == true
+  return REF_HEADING_TETS[normalize_heading_text(pandoc.utils.stringify(header))] == true
 end
 
 -- 引用 token 解析：括号内为逗号分隔的编号 / 编号区间（- – — ~），返回编号列表
@@ -264,7 +264,7 @@ local function rewrite_str_tokens(text, entries, stats, wrap)
     if resolvable then
       local link = pandoc.Link(
         pandoc.List({ pandoc.Str(token) }),
-        "#" .. REF_ANCHOR_PREFIX .. numbers[1],
+        "#" .. REF_ANCHOR_PREFI .. numbers[1],
         "",
         pandoc.Attr("", { "md2docx-ref" })
       )
@@ -381,7 +381,7 @@ local function anchor_block(block, number)
   if block.t ~= "Para" and block.t ~= "Plain" then
     return false
   end
-  block.content:insert(1, pandoc.Span(pandoc.List({}), pandoc.Attr(REF_ANCHOR_PREFIX .. number)))
+  block.content:insert(1, pandoc.Span(pandoc.List({}), pandoc.Attr(REF_ANCHOR_PREFI .. number)))
   return true
 end
 

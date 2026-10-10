@@ -87,3 +87,13 @@ jobs:
 
       - name: 运行测试（含覆盖率）
         run: uv run pytest tests/ -v --cov=md2docx_core --cov=md2docx_cli --cov-report=term
+
+      - name: 上传失败测试调试产物
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-debug-${{ matrix.os }}
+          path: |
+            **/*.docx
+            **/*.html
+          if-no-files-found: ignore
