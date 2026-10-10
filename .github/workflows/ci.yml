@@ -24,8 +24,13 @@ jobs:
         run: uv sync --dev
 
       - name: 安装 pandoc (Linux)
+        # apt 源的 pandoc 过老（2.9.x），与本地/发布包的 3.8.2.1 行为不一致
+        # （引用转换、Lua 过滤器依赖 3.x 特性）——统一从官方 Release 安装
         if: runner.os == 'Linux'
-        run: sudo apt-get update && sudo apt-get install -y pandoc
+        run: |
+          curl -sL https://github.com/jgm/pandoc/releases/download/3.8.2.1/pandoc-3.8.2.1-linux-amd64.tar.gz | tar xz
+          sudo mv pandoc-3.8.2.1/bin/pandoc /usr/local/bin/pandoc
+          pandoc --version | head -1
 
       - name: 安装 pandoc (Windows)
         if: runner.os == 'Windows'
