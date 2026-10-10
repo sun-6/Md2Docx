@@ -94,9 +94,15 @@ jobs:
           set -x
           which pandoc
           pandoc --version | head -1
-          pandoc tests/fixtures/citations_test.md -L table_filter.lua --to html5 -M md2docx-citations=true -o diag_raw.html
+          pandoc tests/fixtures/citations_test.md -L table_filter.lua --to html5 -M md2docx-citations=true -o diag_raw.html 2> diag_stderr.txt
+          echo "--- pandoc stderr（含 MD2DOCX-REF 诊断）:"
+          cat diag_stderr.txt
+          echo "--- 区域设置:"
+          locale 2>/dev/null | head -3 || true
+          cmd //c chcp 2>/dev/null || true
           n=$(grep -c md2docx-ref diag_raw.html || true)
           echo "raw pandoc md2docx-ref count: $n"
+          export PYTHONIOENCODING=utf-8
           uv run python - <<'PY'
           import md2docx_core as core
           logs = []
