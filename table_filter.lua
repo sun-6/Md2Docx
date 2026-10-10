@@ -14,7 +14,18 @@ local function ref_diag_info(msg)
 end
 
 local function ref_diag_warn(msg)
-  io.stderr:write("MD2DOC-REF-WARN: " .. msg .. "\n")
+  io.stderr:write("MD2DOCX-REF-WARN: " .. msg .. "\n")
+end
+
+-- ASCII 专用小写化：Lua 的 string.lower 逐字节调 C tolower，随进程区域设置
+-- 而变——西文 Windows（CP1252）下 0x8C "Œ" 会被小写化为 0x9C，把 CJK
+-- UTF-8 字节流改写（"献" E7 8C AE 实测变成 "纲" E7 9C AE），导致标题
+-- 匹配静默失败。凡会接触非 ASCII 文本的字符串，一律用本函数，仅缩小
+-- A-Z 字节区间；HTML 标签正则同理用 [A-Za-z] 而非 %a。
+local function ascii_lower(s)
+  return (s:gsub("[A-Z]", function(c)
+    return string.char(c:byte() + 32)
+  end))
 end
 
 -- 以下两条与 core 侧互为镜像（Lua/Python 各一份，改动须双侧同步）：
@@ -139,7 +150,7 @@ local REF_HEADING_NUMERALS = {
 -- 中文数字）+ 至多一个分隔符（. 、 ) ．）。中文数字须按真实字符
 -- 匹配——Lua 字符类按字节工作，会误伤共用首字节的汉字（如"人"）。
 local function normalize_heading_text(text)
-  local t = text:gsub("^%s+", ""):gsub("%s+$", ""):lower()
+  local t = ascii_lower(text:gsub("^%s+", ""):gsub("%s+$", ""))
 
   local function strip_numbering(s)
     local digits = s:match("^(%d+)")
@@ -192,7 +203,7 @@ local function citations_enabled(meta)
   if type(flag) == "boolean" then
     return flag
   end
-  local s = pandoc.utils.stringify(flag):lower()
+  local s = ascii_lower(pandoc.utils.stringify(flag))
   return s ~= "false" and s ~= "off" and s ~= "no" and s ~= "0"
 end
 
@@ -748,8 +759,8 @@ function Inlines(inlines)
   for _, el in ipairs(inlines) do
     if el.t == 'RawInline' and el.format == 'html' then
       local text = el.text
-      local open_tag = text:match('^<([%a]+)[^>]*>$')
-      local close_tag = text:match('^</([%a]+)[^>]*>$')
+      local open_tag = text:match("^<([A-Za-z]+)[^>]*>$")
+      local close_tag = text:match("^</([A-Za-z]+)[^>]*>$")
 
       if close_tag then
         if close_tag == 'a' or PAIR_TAGS[close_tag] then
