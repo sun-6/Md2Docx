@@ -151,3 +151,5 @@ CLAUDE.md
 
 # 狗粮产物：发布流程本地验证用，不入库（RELEASE.md 生成步骤）
 /docs/使用说明.html
+
+*.lfbak
