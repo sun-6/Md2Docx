@@ -92,7 +92,7 @@ stdout carries a single JSON result; logs go to stderr; exit codes 0 success / 1
 
 ### One-click AI enablement
 
-The GUI's "AI 支持" button registers PATH, installs the bundled agent skill, and self-tests. The skill covers two things: **operations** (CLI invocation, JSON result handling, remediation on failure) and **authoring conventions** (front matter, diagram/equation fences, captions, citation markers, TOC and page-break rules). Afterwards, telling Claude Code / Cursor / Zcode to "convert this md to Word" just works — and the recommended flow is to have the AI **draft the document to the skill's spec**, so the markdown fits the converter from the start. (Onedir build only; the single-file build shows guidance to switch instead.)
+The GUI's "AI 支持" button registers PATH, installs the bundled agent skill, and self-tests. The skill covers two things: **operations** (CLI invocation, JSON result handling, remediation on failure) and **authoring conventions** (front matter, diagram/equation fences, captions, citation markers, TOC and page-break rules). Afterwards, telling Claude Code / Cursor / Zcode to "convert this md to Word" just works — and the recommended flow is to have the AI **draft the document to the skill's spec**, so the markdown fits the converter from the start.
 
 ## FAQ
 
