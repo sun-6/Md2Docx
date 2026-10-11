@@ -8,19 +8,24 @@ on:
 permissions:
   contents: write
 
+# runner 控制台代码页非 UTF-8，构建脚本的中文/emoji 输出会触发
+# UnicodeEncodeError——强制 Python UTF-8 模式
+env:
+  PYTHONUTF8: "1"
+
 jobs:
   build-windows:
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: 安装 uv
-        uses: astral-sh/setup-uv@v5
+        uses: astral-sh/setup-uv@v8.1.0
         with:
           enable-cache: true
 
       - name: 安装依赖
-        run: uv sync --dev
+        run: uv sync --locked --all-extras --dev
 
       - name: 下载 pandoc
         shell: pwsh
@@ -40,7 +45,7 @@ jobs:
           Move-Item $exe.FullName .
 
       - name: 安装 Playwright 浏览器
-        run: uv run playwright install chromium
+        run: uv run python -m playwright install chromium
 
       - name: 测试
         run: uv run pytest tests/ -q
@@ -52,8 +57,8 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           body_path: RELEASE_BODY.md
+          # 发布物仅单目录版（单文件版不上传）
           files: |
             Md2Docx_Release_Dir_*.zip
-            Md2Docx_Release_File_*.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
